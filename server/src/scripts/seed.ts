@@ -436,18 +436,18 @@ async function seed() {
   // Seed published results for Student 1 across 3 courses
   const student1 = students[0];
   const sampleCoursesResults = [
-    { course: courses[0], marks: 92, grade: 'A', gp: 4.0 },
-    { course: courses[1], marks: 87, grade: 'B+', gp: 3.5 },
-    { course: courses[2], marks: 82, grade: 'B', gp: 3.0 }
+    { section: sections[0], course: courses[0], marks: 92, grade: 'A', gp: 4.0 },
+    { section: sections[1], course: courses[1], marks: 87, grade: 'B+', gp: 3.5 },
+    { section: sections[2], course: courses[2], marks: 82, grade: 'B', gp: 3.0 }
   ];
 
   for (const cr of sampleCoursesResults) {
     await CourseResult.updateOne(
-      { studentId: student1._id, courseId: cr.course._id },
+      { studentId: student1._id, courseSectionId: cr.section._id },
       {
         $set: {
           studentId: student1._id,
-          courseSectionId: firstSection._id,
+          courseSectionId: cr.section._id,
           courseId: cr.course._id,
           semesterId: semCurrent1._id,
           totalMarks: cr.marks,
