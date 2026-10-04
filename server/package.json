@@ -2,7 +2,7 @@
   "name": "@huru/server",
   "version": "0.1.0",
   "private": true,
-  "scripts": { "dev": "tsx watch src/server.ts", "build": "tsc", "start": "node dist/server.js", "seed": "tsx src/scripts/seed.ts", "test": "vitest run" },
+  "scripts": { "dev": "node ../node_modules/tsx/dist/cli.mjs watch src/server.ts", "build": "node ../node_modules/typescript/bin/tsc", "start": "node dist/server.js", "seed": "node ../node_modules/tsx/dist/cli.mjs src/scripts/seed.ts", "test": "node ../node_modules/vitest/vitest.mjs run" },
   "dependencies": {
     "bcrypt": "^6.0.0", "cookie-parser": "^1.4.7", "cors": "^2.8.5", "dotenv": "^16.5.0", "express": "^5.1.0", "express-rate-limit": "^7.5.0", "helmet": "^8.1.0", "jsonwebtoken": "^9.0.2", "mongoose": "^8.15.1", "morgan": "^1.10.0", "zod": "^3.24.4"
   },
