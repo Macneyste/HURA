@@ -1,62 +1,166 @@
 # HURU — Hormuud University Digital Platform
 
-Phase 1 foundation for Hormuud University’s digital ecosystem: secure identity, role-based access, user administration, audit trails, and a polished responsive web experience. Its design is deliberately modular so later academic, finance, communications, AI, and mobile modules can share the same platform services.
+Phase 1, Phase 2, and Phase 3 foundation for Hormuud University’s digital ecosystem: secure identity, role-based access, academic structure, attendance, examination schedules, grading, GPA/CGPA calculations, official transcripts, and audit trails.
 
-## Included in Phase 1
+## Included Systems
 
-- React + Vite + TypeScript client with the HURU design system, responsive navigation, light/dark themes, accessible forms and protected routes.
-- Express + TypeScript API with MongoDB/Mongoose models, Zod validation, consistent API responses, centralized errors and security middleware.
-- JWT access tokens, rotating HTTP-only refresh tokens, bcrypt password hashing, password reset/change flows and login-rate protection.
-- Central roles/permissions, reusable `authenticate`, `authorize`, and `requirePermission` middleware.
-- User management API with filtering, search and pagination; audit logging for sensitive actions.
+### Phase 1: Identity & Security Foundation
+- React + Vite + TypeScript client with the HURU design system, responsive navigation, light/dark themes, and protected routes.
+- Express + TypeScript API with MongoDB/Mongoose models, Zod validation, consistent API responses, and security middleware.
+- JWT access tokens, rotating HTTP-only refresh tokens, bcrypt password hashing, and login-rate protection.
+- Central roles/permissions (`SUPER_ADMIN`, `ADMIN`, `HOD`, `LECTURER`, `STUDENT`, `FINANCE`), reusable `authenticate`, `authorize`, and `requirePermission` middleware.
+- User management API with audit logging for sensitive actions.
+
+### Phase 2: Academic Management Foundation
+- Faculty, Department, and Program management with code and prerequisite validation.
+- Academic Year, Semester, Course, and Course Section models.
+- StudentProfile and LecturerProfile with departmental scoping.
+- Course registration workflow enforcing capacity, prerequisites, and credit hour rules.
+
+### Phase 3: Attendance, Examination & Results Management
+- **Attendance Management:**
+  - `AttendanceSession` & `AttendanceRecord` models with unique student-session constraints.
+  - Lecturer attendance roster with bulk actions: Mark All Present, Mark All Absent, status toggles.
+  - Configurable attendance percentage formula with late weight and threshold warnings (< 75% Warning, < 50% Critical).
+- **Assessment Management:**
+  - Assessment types: Assignment, Quiz, Midterm, Project, Practical, Final Exam.
+  - 100% total weight validation rule before results submission.
+  - Spreadsheet-like student mark entry with auto-percentage calculation.
+- **Examination Management:**
+  - Midterm, Final, Make-up, Supplementary exam scheduling.
+  - Comprehensive conflict detection: Room conflicts, student timetable clashes, and invigilator conflicts.
+- **Grading & Results Workflow:**
+  - Configurable `GradeScale` (A+, A, B+, B, C+, C, D, F) and `AcademicStandingRule`.
+  - Academic flow: `Draft` → `Submitted` (Lecturer) → `Verified` (HOD) → `Published` / `Locked` (Admin).
+  - Students strictly access published results.
+  - Result locking with mandatory reason and immutable audit history for amendments.
+  - Accurate weighted Semester GPA and cumulative CGPA calculation across all completed semesters.
+- **Official Digital Transcripts:**
+  - Official transcript generation with unique verification references (`TR-HU-YYYY-XXXXXX`).
+  - Print/PDF export layout adhering to the HURU design identity.
+  - Public verification endpoint at `/verify/transcript/:referenceNumber` for external verification.
+- **Student Performance Dashboard:**
+  - Metric cards for GPA, CGPA, Credits Earned, Credits Remaining, Standing.
+  - Visual analytics for GPA trends and grade distribution.
+
+---
+
+## Academic Architecture Flow
+
+```text
+University
+└── Faculty
+    └── Department
+        └── Program
+            └── Academic Year
+                └── Semester
+                    └── Course
+                        └── Course Section
+                            └── Course Registration
+                                ├── Attendance Sessions & Records
+                                ├── Assessments & Marks Entry (100% total weight)
+                                ├── Exam Timetables (Conflict Protected)
+                                └── Results Workflow (Draft → Submitted → Verified → Published)
+                                    └── GPA & CGPA Engine
+                                        └── Official Transcript & Public Verification
+```
+
+---
 
 ## Structure
 
 ```text
-client/  React application, contexts, routes, pages, reusable UI and API services
-server/  Express API: config, models, controllers, middleware, validators and routes
+client/  React 19 + Vite application, contexts, responsive UI, Phase 1/2/3 pages and services
+server/  Express 5 API: config, models, controllers, middleware, validators, tests, routes, seeds
 ```
 
-## Quick start
+---
 
-1. Copy `.env.example` to `server/.env` and replace development secrets with long random values.
-2. Install packages: `npm.cmd install`
-3. Ensure MongoDB is running and then seed development data: `npm.cmd run seed`
-4. Start client and API: `npm.cmd run dev`
+## Quick Start
 
-The web app runs at `http://localhost:5173`; the API runs at `http://localhost:5000`.
+1. Copy `.env.example` to `server/.env` and replace development secrets with random values.
+2. Install dependencies: `npm run install` or `npm install`
+3. Run tests: `npm run test`
+4. Build both workspaces: `npm run build`
+5. Seed development data: `npm run seed`
+6. Start client and API: `npm run dev`
 
-## Development seed accounts
+The web application runs at `http://localhost:5173`; the API runs at `http://localhost:5000`.
 
-All development seed accounts use `HuruDev2026!`. Never use this password in production.
+---
+
+## Development Seed Accounts
+
+All development seed accounts use password: `HuruDev2026!`. Never use this password in production.
 
 - `superadmin@hormuud.edu.so` — SUPER_ADMIN
 - `admin@hormuud.edu.so` — ADMIN
-- `amina.hassan@hormuud.edu.so` — LECTURER
-- `abdi.nur@hormuud.edu.so` — HOD
+- `lecturer1@hormuud.edu.so` — HOD (Head of Department)
+- `lecturer2@hormuud.edu.so` — LECTURER
 - `hodan.ali@hormuud.edu.so` — FINANCE
-- `mohamed.ahmed@hormuud.edu.so` / `fadumo.osman@hormuud.edu.so` — STUDENT
+- `student1@hormuud.edu.so` — STUDENT (Pre-seeded with attendance, published grades & transcript `TR-HU-2026-A8F291`)
+- `student2@hormuud.edu.so` — STUDENT
 
-## Environment variables
+---
 
-| Variable | Purpose |
-| --- | --- |
-| `MONGODB_URI` | MongoDB connection URL |
-| `JWT_ACCESS_SECRET` | Access-token signing secret |
-| `JWT_REFRESH_SECRET` | Refresh-token signing secret |
-| `ACCESS_TOKEN_EXPIRES` | Access-token lifetime |
-| `REFRESH_TOKEN_EXPIRES` | Refresh-token lifetime |
-| `PORT` | API port |
-| `CLIENT_URL` | Allowed frontend origin |
+## Phase 3 API Endpoints
 
-## API
+- **Attendance:**
+  - `GET /api/v1/attendance/sessions`
+  - `POST /api/v1/attendance/sessions`
+  - `GET /api/v1/attendance/sessions/:id`
+  - `PATCH /api/v1/attendance/sessions/:id`
+  - `POST /api/v1/attendance/sessions/:id/records`
+  - `PATCH /api/v1/attendance/records/:id`
+  - `GET /api/v1/attendance/students/:id`
+- **Assessments:**
+  - `GET /api/v1/assessments`
+  - `POST /api/v1/assessments`
+  - `GET /api/v1/assessments/:id`
+  - `PATCH /api/v1/assessments/:id`
+  - `DELETE /api/v1/assessments/:id`
+  - `GET /api/v1/assessments/section/:sectionId/summary`
+- **Marks:**
+  - `GET /api/v1/assessment-results`
+  - `GET /api/v1/assessment-results/sheet/:assessmentId`
+  - `POST /api/v1/assessment-results`
+  - `PATCH /api/v1/assessment-results/:id`
+  - `POST /api/v1/assessment-results/publish`
+- **Examinations:**
+  - `GET /api/v1/exams`
+  - `POST /api/v1/exams`
+  - `GET /api/v1/exams/:id`
+  - `PATCH /api/v1/exams/:id`
+  - `DELETE /api/v1/exams/:id`
+- **Results & Performance:**
+  - `GET /api/v1/results`
+  - `GET /api/v1/results/performance/:studentId`
+  - `POST /api/v1/results/calculate`
+  - `POST /api/v1/results/submit`
+  - `POST /api/v1/results/verify`
+  - `POST /api/v1/results/publish`
+  - `PATCH /api/v1/results/change-published`
+- **Official Transcripts & Public Verification:**
+  - `GET /api/v1/transcripts/:studentId`
+  - `POST /api/v1/transcripts/generate`
+  - `GET /api/v1/transcripts/:id/download` (Printable official PDF document)
+  - `GET /api/v1/verify/transcript/:referenceNumber` (Public authentication endpoint)
+- **Academic Policy Configuration:**
+  - `GET /api/v1/grade-scales`, `POST /api/v1/grade-scales`
+  - `GET /api/v1/academic-standing`, `POST /api/v1/academic-standing`
+  - `GET /api/v1/attendance-settings`, `PATCH /api/v1/attendance-settings`
 
-Base URL: `/api/v1`. Authentication covers register, login, refresh, logout, reset/change password, and current user. User routes support paginated listing, creating, editing, changing status and role, and deletion. Role and audit-log endpoints are available to authorized administrators. All responses follow `{ success, message, data, meta? }`.
+---
 
-## Security
+## Design Identity (HURU Design System)
 
-Helmet, strict CORS, rate limits, small JSON request limits, Zod validation, password hashing, HTTP-only refresh cookies, refresh-token rotation, account-status checks, permission gates, audit logs and production-safe errors are enabled. Password hashes and secrets are never returned by the API.
-
-## Quality and next phases
-
-Run `npm.cmd run build` to type-check and build both workspaces. The server separates models, validators, controllers and routes, while the client centralizes API calls, authentication and theme state. Future modules should consume these shared identity, RBAC, audit, API and design-system layers rather than duplicate them.
+- **Primary:** `#123B6D`
+- **Gold:** `#D9A441`
+- **Accent:** `#1D9BF0`
+- **Light:** `#F7F9FC`
+- **Dark:** `#0B1220`
+- **Text:** `#172033`
+- **Muted:** `#667085`
+- **Success:** `#16A34A`
+- **Warning:** `#F59E0B`
+- **Danger:** `#DC2626`
