@@ -1,0 +1,2 @@
+import { Router } from 'express'; import * as c from '../controllers/role.controller.js'; import { authenticate, requirePermission } from '../middleware/auth.js'; import { PERMISSIONS } from '../constants/permissions.js';
+const router = Router(); router.use(authenticate, requirePermission(PERMISSIONS.SYSTEM_MANAGE)); router.get('/', c.listRoles); router.get('/:id', c.getRole); router.post('/', c.createRole); router.patch('/:id', c.updateRole); router.delete('/:id', c.deleteRole); export default router;

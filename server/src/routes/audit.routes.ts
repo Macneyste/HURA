@@ -1,0 +1,1 @@
+import { Router } from 'express'; import { listAuditLogs } from '../controllers/audit.controller.js'; import { authenticate, requirePermission } from '../middleware/auth.js'; import { PERMISSIONS } from '../constants/permissions.js'; const router = Router(); router.get('/', authenticate, requirePermission(PERMISSIONS.AUDIT_READ), listAuditLogs); export default router;

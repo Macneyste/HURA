@@ -1,0 +1,2 @@
+import type { NextFunction, Request, Response } from 'express'; import type { ZodTypeAny } from 'zod'; import { AppError } from '../utils/AppError.js';
+export const validate = (schema: ZodTypeAny) => (req: Request, _res: Response, next: NextFunction) => { const result = schema.safeParse({ body: req.body, query: req.query, params: req.params }); if (!result.success) return next(new AppError(422, 'Validation failed', result.error.issues.map((i) => ({ path: i.path.join('.'), message: i.message })))); Object.assign(req, result.data); next(); };
